@@ -21,20 +21,11 @@ export function BottomSheet({ open, onClose, title, children }: BottomSheetProps
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <div
-        className="absolute inset-0 bg-black/40 animate-[fadeIn_0.2s_ease]"
-        onClick={onClose}
-        aria-hidden
-      />
-      <div
-        className="relative w-full max-w-[560px] max-h-[88svh] bg-[var(--color-surface)] rounded-t-[28px] shadow-[var(--shadow-soft)] flex flex-col overflow-hidden animate-[slideUp_0.25s_cubic-bezier(0.32,0.72,0,1)]"
-      >
-        <div className="flex justify-center pt-3 pb-1 shrink-0">
-          <div className="h-1.5 w-10 rounded-full bg-[var(--color-border)]" />
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/40 animate-[fadeIn_0.2s_ease]" onClick={onClose} aria-hidden />
+      <div className="relative w-full max-w-[480px] max-h-[85svh] bg-[var(--color-surface)] rounded-[28px] shadow-[var(--shadow-soft)] flex flex-col overflow-hidden animate-[popIn_0.2s_cubic-bezier(0.32,0.72,0,1)]">
         {title && (
-          <div className="flex items-center justify-between px-5 pb-2 shrink-0">
+          <div className="flex items-center justify-between px-5 pt-5 pb-2 shrink-0">
             <h2 className="text-[17px] font-semibold text-[var(--color-text)]">{title}</h2>
             <button
               onClick={onClose}
@@ -45,11 +36,17 @@ export function BottomSheet({ open, onClose, title, children }: BottomSheetProps
             </button>
           </div>
         )}
-        <div className="overflow-y-auto px-5 pb-[calc(env(safe-area-inset-bottom)+20px)]">{children}</div>
+        <div className="sheet-scroll overflow-y-auto overscroll-contain px-5 pt-2 pb-6" style={{ scrollbarGutter: 'stable' }}>
+          {children}
+        </div>
       </div>
       <style>{`
         @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes slideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.96) translateY(8px) } to { opacity: 1; transform: scale(1) translateY(0) } }
+        .sheet-scroll { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
+        .sheet-scroll::-webkit-scrollbar { width: 8px; }
+        .sheet-scroll::-webkit-scrollbar-track { background: transparent; }
+        .sheet-scroll::-webkit-scrollbar-thumb { background-color: var(--color-border); border-radius: 8px; }
       `}</style>
     </div>
   );
