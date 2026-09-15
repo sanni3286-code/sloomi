@@ -12,9 +12,11 @@ export function PlansPage() {
   const plans = usePlansStore((s) => s.plans);
   const templates = usePlansStore((s) => s.templates);
   const createPlan = usePlansStore((s) => s.createPlan);
+  const deletePlan = usePlansStore((s) => s.deletePlan);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [nameInput, setNameInput] = useState('');
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   if (selectedPlanId) {
     return (
@@ -45,6 +47,7 @@ export function PlansPage() {
               taskCount={list.length}
               totalSeconds={sumDurations(list)}
               onTap={() => setSelectedPlanId(plan.id)}
+              onDelete={() => setDeleteId(plan.id)}
             />
           );
         })}
@@ -82,6 +85,29 @@ export function PlansPage() {
           >
             Plan erstellen
           </Button>
+        </div>
+      </BottomSheet>
+
+      <BottomSheet open={Boolean(deleteId)} onClose={() => setDeleteId(null)} title="Plan löschen?">
+        <div className="flex flex-col gap-4 pb-2">
+          <p className="text-[14px] text-[var(--color-text-muted)]">
+            {deleteId ? plans.find((p) => p.id === deleteId)?.name : ''} wird dauerhaft gelöscht.
+          </p>
+          <div className="flex gap-3">
+            <Button variant="secondary" className="flex-1" onClick={() => setDeleteId(null)}>
+              Abbrechen
+            </Button>
+            <Button
+              variant="danger"
+              className="flex-1"
+              onClick={() => {
+                if (deleteId) void deletePlan(deleteId);
+                setDeleteId(null);
+              }}
+            >
+              Löschen
+            </Button>
+          </div>
         </div>
       </BottomSheet>
     </div>
