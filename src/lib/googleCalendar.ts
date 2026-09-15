@@ -129,7 +129,7 @@ export async function fetchTodaysEvents(accessToken: string): Promise<CalendarEv
 }
 
 /** Nächste anstehende Termine ab morgen (kein Enddatum), zur Wochenvorschau. */
-export async function fetchUpcomingEvents(accessToken: string, maxResults = 8): Promise<CalendarEvent[]> {
+export async function fetchUpcomingEvents(accessToken: string, maxResults = 2): Promise<CalendarEvent[]> {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
   start.setDate(start.getDate() + 1);
