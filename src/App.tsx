@@ -3,6 +3,8 @@ import { useSettingsStore } from './store/settingsStore';
 import { usePlansStore } from './store/plansStore';
 import { usePreferencesStore } from './store/preferencesStore';
 import { useSessionStore } from './store/sessionStore';
+import { useAuthStore } from './store/authStore';
+import { useTodosStore } from './store/todosStore';
 import { NavBar, type NavTab } from './components/layout/NavBar';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { TodayPage } from './pages/TodayPage';
@@ -30,13 +32,16 @@ export default function App() {
   const initSession = useSessionStore((s) => s.init);
   const sessionHydrated = useSessionStore((s) => s.hydrated);
   const session = useSessionStore((s) => s.session);
+  const initAuth = useAuthStore((s) => s.init);
+  const initTodos = useTodosStore((s) => s.init);
 
   useEffect(() => {
     void initSettings();
-    void initPlans();
+    void initPlans().then(() => initAuth());
     void initPreferences();
     void initSession();
-  }, [initSettings, initPlans, initPreferences, initSession]);
+    void initTodos();
+  }, [initSettings, initPlans, initPreferences, initSession, initAuth, initTodos]);
 
   useAppliedTheme();
 

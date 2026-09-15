@@ -9,9 +9,12 @@ import { getIconComponent } from '../lib/iconLibrary';
 import { Sloth } from '../components/sloth/Sloth';
 import { TaskList, type TaskListItem } from '../components/tasks/TaskList';
 import { TaskEditorSheet, type TaskEditorValue } from '../components/tasks/TaskEditorSheet';
+import { TodoSection } from '../components/tasks/TodoSection';
 import { Button } from '../components/common/Button';
 import { BottomSheet } from '../components/common/BottomSheet';
 import { unlockAudio } from '../lib/sound';
+
+type TasksView = 'today' | 'todo';
 
 export function TasksPage() {
   const tasks = useSessionStore((s) => s.tasks);
@@ -26,6 +29,7 @@ export function TasksPage() {
   const plans = usePlansStore((s) => s.plans);
   const templates = usePlansStore((s) => s.templates);
 
+  const [view, setView] = useState<TasksView>('today');
   const [addOpen, setAddOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [planPickerOpen, setPlanPickerOpen] = useState(false);
@@ -59,35 +63,59 @@ export function TasksPage() {
         <p className="text-[14px] text-[var(--color-text-muted)]">Deine heutige Planung</p>
       </div>
 
-      <div className="px-5 mt-6 flex-1">
-        {ordered.length > 0 && (
-          <TaskList
-            items={items}
-            onReorderDraggable={(ids) => void reorderUpcoming(ids)}
-            onTapItem={(id) => setEditId(id)}
-            onDeleteItem={(id) => void removeTask(id)}
-            allowDelete={() => true}
-          />
-        )}
+      <div className="px-5 mt-4">
+        <div className="flex bg-[var(--color-surface)] rounded-2xl p-1">
+          {(['today', 'todo'] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => setView(v)}
+              className="flex-1 py-2.5 rounded-xl text-[14px] font-medium transition-colors"
+              style={{
+                background: view === v ? 'var(--color-accent)' : 'transparent',
+                color: view === v ? 'var(--color-on-accent)' : 'var(--color-text-muted)',
+              }}
+            >
+              {v === 'today' ? 'Heute' : 'To-Do'}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        <button
-          onClick={() => setAddOpen(true)}
-          className="w-full mt-3 py-3.5 rounded-2xl border border-dashed border-[var(--color-accent)] text-[var(--color-on-accent)] bg-[var(--color-accent-soft)] text-[14px] font-medium flex items-center justify-center gap-2"
-        >
-          <Plus size={16} /> Aufgabe hinzufügen
-        </button>
+      <div className="px-5 mt-4 flex-1">
+        {view === 'todo' ? (
+          <TodoSection />
+        ) : (
+          <>
+            {ordered.length > 0 && (
+              <TaskList
+                items={items}
+                onReorderDraggable={(ids) => void reorderUpcoming(ids)}
+                onTapItem={(id) => setEditId(id)}
+                onDeleteItem={(id) => void removeTask(id)}
+                allowDelete={() => true}
+              />
+            )}
 
-        {plans.length > 0 && (
-          <button
-            onClick={() => setPlanPickerOpen(true)}
-            className="w-full mt-2 py-3 text-[14px] font-medium text-[var(--color-on-accent)]"
-          >
-            Gespeicherten Plan hinzufügen
-          </button>
+            <button
+              onClick={() => setAddOpen(true)}
+              className="w-full mt-3 py-3.5 rounded-2xl border border-dashed border-[var(--color-accent)] text-[var(--color-on-accent)] bg-[var(--color-accent-soft)] text-[14px] font-medium flex items-center justify-center gap-2"
+            >
+              <Plus size={16} /> Aufgabe hinzufügen
+            </button>
+
+            {plans.length > 0 && (
+              <button
+                onClick={() => setPlanPickerOpen(true)}
+                className="w-full mt-2 py-3 text-[14px] font-medium text-[var(--color-on-accent)]"
+              >
+                Gespeicherten Plan hinzufügen
+              </button>
+            )}
+          </>
         )}
       </div>
 
-      {ordered.length > 0 && (
+      {view === 'today' && ordered.length > 0 && (
         <div className="px-5 pb-[calc(env(safe-area-inset-bottom)+16px)]">
           <div className="rounded-3xl bg-[var(--color-surface)] shadow-[var(--shadow-card)] px-5 py-4 flex flex-col items-center">
             <div className="flex items-center justify-between w-full text-[13px] text-[var(--color-text-muted)]">

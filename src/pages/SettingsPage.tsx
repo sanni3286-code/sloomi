@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Bell, Check, Volume2, VolumeX } from 'lucide-react';
 import { useSettingsStore } from '../store/settingsStore';
 import { useCalendarStore } from '../store/calendarStore';
+import { useAuthStore } from '../store/authStore';
 import { playSound, unlockAudio } from '../lib/sound';
 import { isNotificationSupported, requestNotificationPermission } from '../lib/notifications';
 import { Button } from '../components/common/Button';
@@ -60,11 +61,36 @@ export function SettingsPage() {
   const disconnect = useCalendarStore((s) => s.disconnect);
   const calendarLoading = useCalendarStore((s) => s.loading);
   const calendarError = useCalendarStore((s) => s.error);
+  const user = useAuthStore((s) => s.user);
+  const signInWithGoogle = useAuthStore((s) => s.signInWithGoogle);
+  const signOut = useAuthStore((s) => s.signOut);
 
   return (
     <div className="flex flex-col flex-1 pb-24 px-5">
       <div className="pt-6 safe-top">
         <h1 className="text-[20px] font-semibold text-[var(--color-text)]">Einstellungen</h1>
+      </div>
+
+      <div className="mt-6 flex flex-col gap-2">
+        <h2 className="text-[13px] font-medium text-[var(--color-text-muted)] px-1">Konto</h2>
+        <Row
+          label={user ? user.email ?? 'Angemeldet' : 'Nicht angemeldet'}
+          description={
+            user
+              ? 'Deine gespeicherten Pläne werden geräteübergreifend synchronisiert.'
+              : 'Melde dich an, um Pläne auf mehreren Geräten zu synchronisieren.'
+          }
+        >
+          {user ? (
+            <Button variant="secondary" size="md" className="h-9 px-3 text-[13px]" onClick={() => void signOut()}>
+              Abmelden
+            </Button>
+          ) : (
+            <Button size="md" className="h-9 px-3 text-[13px]" onClick={() => void signInWithGoogle()}>
+              Mit Google anmelden
+            </Button>
+          )}
+        </Row>
       </div>
 
       <div className="mt-6 flex flex-col gap-2">

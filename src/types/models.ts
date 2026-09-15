@@ -62,6 +62,22 @@ export interface SessionTask {
   completedAt: number | null;
 }
 
+/** 0 = Montag … 6 = Sonntag (aktuelle Woche, kein festes Datum). */
+export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
+/** Allgemeiner Aufgabenspeicher (To-Do) — unabhängig von Plänen/Session, optional einem Wochentag zugeordnet. */
+export interface TodoItem {
+  id: string;
+  title: string;
+  durationSeconds: number;
+  color: string;
+  icon: string;
+  weekday: Weekday | null;
+  completed: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
 /** Gelernte persönliche Zuordnungen für einen normalisierten Aufgabennamen. */
 export interface UserTaskPreference {
   normalizedKeyword: string;

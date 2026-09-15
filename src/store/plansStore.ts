@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { db } from '../lib/db';
 import { createId } from '../lib/id';
+import { pushPlan, pushTemplate, pushTemplates, deletePlanRemote, deleteTemplateRemote } from '../lib/planSync';
 import type { Plan, TaskTemplate } from '../types/models';
 
 interface PlansState {
@@ -44,6 +45,7 @@ export const usePlansStore = create<PlansState>((set, get) => ({
     const plan: Plan = { id: createId(), name, icon, repeat: false, createdAt: now, updatedAt: now };
     await db.plans.put(plan);
     set({ plans: [plan, ...get().plans], templates: { ...get().templates, [plan.id]: [] } });
+    void pushPlan(plan);
     return plan;
   },
 
@@ -53,6 +55,7 @@ export const usePlansStore = create<PlansState>((set, get) => ({
     const updated = { ...plan, name, icon, updatedAt: Date.now() };
     await db.plans.put(updated);
     set({ plans: get().plans.map((p) => (p.id === planId ? updated : p)) });
+    void pushPlan(updated);
   },
 
   deletePlan: async (planId) => {
@@ -63,6 +66,7 @@ export const usePlansStore = create<PlansState>((set, get) => ({
     });
     const { [planId]: _removed, ...rest } = get().templates;
     set({ plans: get().plans.filter((p) => p.id !== planId), templates: rest });
+    void deletePlanRemote(planId);
   },
 
   duplicatePlan: async (planId, newName) => {
@@ -80,6 +84,8 @@ export const usePlansStore = create<PlansState>((set, get) => ({
       plans: [newPlan, ...get().plans],
       templates: { ...get().templates, [newPlan.id]: newTemplates },
     });
+    void pushPlan(newPlan);
+    void pushTemplates(newTemplates);
     return newPlan;
   },
 
@@ -89,6 +95,7 @@ export const usePlansStore = create<PlansState>((set, get) => ({
     const updated = { ...plan, repeat, updatedAt: Date.now() };
     await db.plans.put(updated);
     set({ plans: get().plans.map((p) => (p.id === planId ? updated : p)) });
+    void pushPlan(updated);
   },
 
   addTemplate: async (planId, input) => {
@@ -105,6 +112,8 @@ export const usePlansStore = create<PlansState>((set, get) => ({
       templates: { ...get().templates, [planId]: [...existing, template] },
       plans: updatedPlan ? get().plans.map((p) => (p.id === planId ? updatedPlan : p)) : get().plans,
     });
+    void pushTemplate(template);
+    if (updatedPlan) void pushPlan(updatedPlan);
     return template;
   },
 
@@ -122,6 +131,7 @@ export const usePlansStore = create<PlansState>((set, get) => ({
     const changedTemplate = updated.find((t) => t.id === templateId)!;
     await db.taskTemplates.put(changedTemplate);
     set({ templates: { ...get().templates, [planId]: updated } });
+    void pushTemplate(changedTemplate);
   },
 
   removeTemplate: async (templateId) => {
@@ -135,6 +145,7 @@ export const usePlansStore = create<PlansState>((set, get) => ({
     if (!planId) return;
     await db.taskTemplates.delete(templateId);
     set({ templates: { ...get().templates, [planId]: get().templates[planId].filter((t) => t.id !== templateId) } });
+    void deleteTemplateRemote(templateId);
   },
 
   reorderTemplates: async (planId, orderedIds) => {
@@ -143,5 +154,6 @@ export const usePlansStore = create<PlansState>((set, get) => ({
     const reordered = orderedIds.map((id, index) => ({ ...byId.get(id)!, position: index })).filter(Boolean);
     await db.taskTemplates.bulkPut(reordered);
     set({ templates: { ...get().templates, [planId]: reordered } });
+    void pushTemplates(reordered);
   },
 }));

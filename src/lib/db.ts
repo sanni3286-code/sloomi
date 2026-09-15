@@ -5,6 +5,7 @@ import type {
   Session,
   SessionTask,
   TaskTemplate,
+  TodoItem,
   UserTaskPreference,
 } from '../types/models';
 
@@ -19,6 +20,7 @@ export class SloomiDatabase extends Dexie {
   sessionTasks!: Table<SessionTask, string>;
   userPreferences!: Table<UserTaskPreference, string>;
   settings!: Table<AppSettings, string>;
+  todos!: Table<TodoItem, string>;
 
   constructor() {
     super('sloomi-db');
@@ -29,6 +31,15 @@ export class SloomiDatabase extends Dexie {
       sessionTasks: 'id, sessionId, position',
       userPreferences: 'normalizedKeyword',
       settings: 'id',
+    });
+    this.version(2).stores({
+      plans: 'id, updatedAt',
+      taskTemplates: 'id, planId, position',
+      sessions: 'id, status, createdAt',
+      sessionTasks: 'id, sessionId, position',
+      userPreferences: 'normalizedKeyword',
+      settings: 'id',
+      todos: 'id, weekday, completed, createdAt',
     });
   }
 }
