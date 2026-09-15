@@ -64,7 +64,7 @@ export function TodayPage() {
     <div className="flex flex-col flex-1 pb-24">
       <div className="px-5 pt-6 safe-top flex flex-col items-center text-center gap-2">
         <img src={publicUrl('logo.png')} alt="sloomi" className="w-full max-w-[280px] mb-14" />
-        <Sloth state={ordered.length === 0 ? 'idle' : 'planning'} size={150} className="mt-10" />
+        <Sloth state={ordered.length === 0 ? 'idle' : 'planning'} size={230} className="mt-20" />
         <h1 className="text-[26px] font-semibold text-[var(--color-text)]">{greeting()}</h1>
         <p className="text-[14px] text-[var(--color-text-muted)]">Was steht heute an?</p>
       </div>
