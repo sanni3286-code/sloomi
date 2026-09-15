@@ -73,38 +73,15 @@ export async function requestAccessToken(silent: boolean): Promise<string> {
   });
 }
 
-export async function fetchTodaysEvents(accessToken: string): Promise<CalendarEvent[]> {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  const end = new Date();
-  end.setHours(23, 59, 59, 999);
+interface RawEvent {
+  id: string;
+  summary?: string;
+  start: { date?: string; dateTime?: string };
+  end: { date?: string; dateTime?: string };
+  status: string;
+}
 
-  const params = new URLSearchParams({
-    timeMin: start.toISOString(),
-    timeMax: end.toISOString(),
-    singleEvents: 'true',
-    orderBy: 'startTime',
-    maxResults: '15',
-  });
-
-  const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?${params}`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-
-  if (!res.ok) {
-    if (res.status === 401) throw new Error('unauthorized');
-    throw new Error(`Kalender konnte nicht geladen werden (${res.status}).`);
-  }
-
-  const data = await res.json();
-  const items = (data.items ?? []) as Array<{
-    id: string;
-    summary?: string;
-    start: { date?: string; dateTime?: string };
-    end: { date?: string; dateTime?: string };
-    status: string;
-  }>;
-
+function parseEvents(items: RawEvent[]): CalendarEvent[] {
   return items
     .filter((item) => item.status !== 'cancelled')
     .map((item) => {
@@ -117,4 +94,53 @@ export async function fetchTodaysEvents(accessToken: string): Promise<CalendarEv
         allDay,
       };
     });
+}
+
+async function fetchEvents(accessToken: string, params: URLSearchParams): Promise<CalendarEvent[]> {
+  const res = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events?${params}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!res.ok) {
+    if (res.status === 401) throw new Error('unauthorized');
+    throw new Error(`Kalender konnte nicht geladen werden (${res.status}).`);
+  }
+
+  const data = await res.json();
+  return parseEvents((data.items ?? []) as RawEvent[]);
+}
+
+export async function fetchTodaysEvents(accessToken: string): Promise<CalendarEvent[]> {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
+  return fetchEvents(
+    accessToken,
+    new URLSearchParams({
+      timeMin: start.toISOString(),
+      timeMax: end.toISOString(),
+      singleEvents: 'true',
+      orderBy: 'startTime',
+      maxResults: '15',
+    }),
+  );
+}
+
+/** Nächste anstehende Termine ab morgen (kein Enddatum), zur Wochenvorschau. */
+export async function fetchUpcomingEvents(accessToken: string, maxResults = 8): Promise<CalendarEvent[]> {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() + 1);
+
+  return fetchEvents(
+    accessToken,
+    new URLSearchParams({
+      timeMin: start.toISOString(),
+      singleEvents: 'true',
+      orderBy: 'startTime',
+      maxResults: String(maxResults),
+    }),
+  );
 }

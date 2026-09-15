@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-import { fetchTodaysEvents, requestAccessToken, type CalendarEvent } from '../lib/googleCalendar';
+import { fetchTodaysEvents, fetchUpcomingEvents, requestAccessToken, type CalendarEvent } from '../lib/googleCalendar';
 import { useSettingsStore } from './settingsStore';
 
 interface CalendarState {
   accessToken: string | null;
   events: CalendarEvent[];
+  upcomingEvents: CalendarEvent[];
   loading: boolean;
   /** true, wenn zuvor verbunden, die stille Reauthentifizierung beim Laden aber fehlschlug. */
   needsReconnect: boolean;
@@ -19,6 +20,7 @@ interface CalendarState {
 export const useCalendarStore = create<CalendarState>((set, get) => ({
   accessToken: null,
   events: [],
+  upcomingEvents: [],
   loading: false,
   needsReconnect: false,
   error: null,
@@ -36,7 +38,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
   },
 
   disconnect: () => {
-    set({ accessToken: null, events: [], needsReconnect: false, error: null });
+    set({ accessToken: null, events: [], upcomingEvents: [], needsReconnect: false, error: null });
     void useSettingsStore.getState().update({ googleCalendarConnected: false });
   },
 
@@ -58,8 +60,11 @@ export const useCalendarStore = create<CalendarState>((set, get) => ({
     if (!token) return;
     set({ loading: true, error: null });
     try {
-      const events = await fetchTodaysEvents(token);
-      set({ events, loading: false });
+      const [events, upcomingEvents] = await Promise.all([
+        fetchTodaysEvents(token),
+        fetchUpcomingEvents(token),
+      ]);
+      set({ events, upcomingEvents, loading: false });
     } catch (err) {
       if (err instanceof Error && err.message === 'unauthorized') {
         set({ accessToken: null, loading: false, needsReconnect: true });
