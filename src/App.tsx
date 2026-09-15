@@ -6,6 +6,7 @@ import { useSessionStore } from './store/sessionStore';
 import { NavBar, type NavTab } from './components/layout/NavBar';
 import { Onboarding } from './components/onboarding/Onboarding';
 import { TodayPage } from './pages/TodayPage';
+import { TasksPage } from './pages/TasksPage';
 import { PlansPage } from './pages/PlansPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { TimerView } from './components/session/TimerView';
@@ -56,7 +57,8 @@ export default function App() {
           <TimerView />
         ) : (
           <>
-            {tab === 'today' && <TodayPage />}
+            {tab === 'today' && <TodayPage onPlanTasks={() => setTab('tasks')} />}
+            {tab === 'tasks' && <TasksPage />}
             {tab === 'plans' && <PlansPage />}
             {tab === 'settings' && <SettingsPage />}
           </>

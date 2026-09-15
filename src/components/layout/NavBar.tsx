@@ -1,6 +1,6 @@
-import { CalendarDays, ListChecks, Settings } from 'lucide-react';
+import { CalendarDays, ListChecks, ListTodo, Settings } from 'lucide-react';
 
-export type NavTab = 'today' | 'plans' | 'settings';
+export type NavTab = 'today' | 'tasks' | 'plans' | 'settings';
 
 interface NavBarProps {
   active: NavTab;
@@ -9,6 +9,7 @@ interface NavBarProps {
 
 const TABS: { id: NavTab; label: string; icon: typeof CalendarDays }[] = [
   { id: 'today', label: 'Heute', icon: CalendarDays },
+  { id: 'tasks', label: 'Aufgaben', icon: ListTodo },
   { id: 'plans', label: 'Pläne', icon: ListChecks },
   { id: 'settings', label: 'Einstellungen', icon: Settings },
 ];
