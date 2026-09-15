@@ -30,7 +30,6 @@ export function TodayCalendarCard() {
   }
 
   if (error) return null;
-  if (!loading && events.length === 0) return null;
 
   return (
     <div className="rounded-2xl bg-[var(--color-surface)] px-4 py-3 mb-3">
@@ -42,11 +41,13 @@ export function TodayCalendarCard() {
       </div>
       {loading ? (
         <p className="text-[13px] text-[var(--color-text-muted)]">Lädt…</p>
+      ) : events.length === 0 ? (
+        <p className="text-[13px] text-[var(--color-text-muted)]">Keine Termine heute.</p>
       ) : (
         <ul className="flex flex-col gap-1.5">
           {events.map((event) => (
             <li key={event.id} className="flex items-baseline gap-2 text-[14px]">
-              <span className="tabular-nums text-[var(--color-text-muted)] shrink-0 w-12">
+              <span className="tabular-nums text-[var(--color-text-muted)] shrink-0 w-16 whitespace-nowrap">
                 {event.allDay ? 'ganztägig' : formatClock(event.start)}
               </span>
               <span className="text-[var(--color-text)] truncate">{event.title}</span>
