@@ -1,4 +1,6 @@
-# FlowTime
+# sloomi
+
+*your time. your pace.*
 
 Eine mobile-first Task-Timer-PWA nach dem Prinzip „Was mache ich jetzt, wie lange dauert es, wann bin ich fertig?" — Aufgabenplanung, geschätzte Dauer, Countdown-Timer und automatische Live-Endzeitberechnung in einem.
 

@@ -12,7 +12,7 @@ import type {
  * Offline-First Persistenz (Spec §33/§34). Alles läuft lokal über IndexedDB —
  * der Timer und die Kernfunktionen hängen nie von einer Internetverbindung ab.
  */
-export class FlowTimeDatabase extends Dexie {
+export class SloomiDatabase extends Dexie {
   plans!: Table<Plan, string>;
   taskTemplates!: Table<TaskTemplate, string>;
   sessions!: Table<Session, string>;
@@ -21,7 +21,7 @@ export class FlowTimeDatabase extends Dexie {
   settings!: Table<AppSettings, string>;
 
   constructor() {
-    super('flowtime-db');
+    super('sloomi-db');
     this.version(1).stores({
       plans: 'id, updatedAt',
       taskTemplates: 'id, planId, position',
@@ -33,4 +33,4 @@ export class FlowTimeDatabase extends Dexie {
   }
 }
 
-export const db = new FlowTimeDatabase();
+export const db = new SloomiDatabase();
