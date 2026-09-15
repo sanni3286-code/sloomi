@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useSessionStore } from '../store/sessionStore';
 import { usePlansStore } from '../store/plansStore';
+import { useSettingsStore } from '../store/settingsStore';
+import { TodayCalendarCard } from '../components/calendar/TodayCalendarCard';
 import { getOrderedTasks } from '../lib/selectors';
 import { computePlanningSchedule, compareToTarget, sumDurations } from '../lib/scheduleEngine';
 import { formatClock, formatDurationLong } from '../lib/format';
@@ -33,6 +35,7 @@ export function TodayPage() {
   const plans = usePlansStore((s) => s.plans);
   const templates = usePlansStore((s) => s.templates);
   const addTemplatesToDraft = useSessionStore((s) => s.addTemplatesToDraft);
+  const googleCalendarConnected = useSettingsStore((s) => s.settings.googleCalendarConnected);
 
   const [addOpen, setAddOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
@@ -70,6 +73,7 @@ export function TodayPage() {
       </div>
 
       <div className="px-5 mt-6 flex-1">
+        {googleCalendarConnected && <TodayCalendarCard />}
         {ordered.length > 0 && (
           <TaskList
             items={items}

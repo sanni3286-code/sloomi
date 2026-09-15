@@ -80,6 +80,7 @@ export interface AppSettings {
   autoAdvance: boolean;
   hapticsEnabled: boolean;
   onboardingCompleted: boolean;
+  googleCalendarConnected: boolean;
 }
 
 export const DEFAULT_TASK_DURATION_SECONDS = 15 * 60;

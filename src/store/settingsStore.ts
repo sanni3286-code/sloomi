@@ -11,6 +11,7 @@ const DEFAULTS: AppSettings = {
   autoAdvance: true,
   hapticsEnabled: true,
   onboardingCompleted: false,
+  googleCalendarConnected: false,
 };
 
 interface SettingsState {

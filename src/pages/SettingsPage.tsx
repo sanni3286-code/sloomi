@@ -1,8 +1,10 @@
 import { useState, type ReactNode } from 'react';
 import { Bell, Check, Volume2, VolumeX } from 'lucide-react';
 import { useSettingsStore } from '../store/settingsStore';
+import { useCalendarStore } from '../store/calendarStore';
 import { playSound, unlockAudio } from '../lib/sound';
 import { isNotificationSupported, requestNotificationPermission } from '../lib/notifications';
+import { Button } from '../components/common/Button';
 import type { SoundId, ThemePreference } from '../types/models';
 
 const SOUND_OPTIONS: { id: SoundId; label: string }[] = [
@@ -54,6 +56,10 @@ export function SettingsPage() {
   const [notifStatus, setNotifStatus] = useState<NotificationPermission | 'unsupported'>(
     isNotificationSupported() ? Notification.permission : 'unsupported',
   );
+  const connect = useCalendarStore((s) => s.connect);
+  const disconnect = useCalendarStore((s) => s.disconnect);
+  const calendarLoading = useCalendarStore((s) => s.loading);
+  const calendarError = useCalendarStore((s) => s.error);
 
   return (
     <div className="flex flex-col flex-1 pb-24 px-5">
@@ -143,7 +149,7 @@ export function SettingsPage() {
         </p>
       </div>
 
-      <div className="mt-6 flex flex-col gap-2 mb-6">
+      <div className="mt-6 flex flex-col gap-2">
         <h2 className="text-[13px] font-medium text-[var(--color-text-muted)] px-1">Benachrichtigungen</h2>
         <Row
           label="Push-Benachrichtigungen"
@@ -165,6 +171,30 @@ export function SettingsPage() {
             </button>
           )}
           {notifStatus === 'granted' && <Check size={18} color="var(--color-accent)" />}
+        </Row>
+      </div>
+
+      <div className="mt-6 flex flex-col gap-2 mb-6">
+        <h2 className="text-[13px] font-medium text-[var(--color-text-muted)] px-1">Kalender</h2>
+        <Row
+          label="Google Kalender"
+          description={
+            calendarError
+              ? calendarError
+              : settings.googleCalendarConnected
+                ? 'Verbunden — heutige Termine erscheinen auf der Heute-Seite.'
+                : 'Zeigt deine heutigen Termine zur Orientierung an, rein lesend.'
+          }
+        >
+          {settings.googleCalendarConnected ? (
+            <Button variant="secondary" size="md" className="h-9 px-3 text-[13px]" onClick={() => disconnect()}>
+              Trennen
+            </Button>
+          ) : (
+            <Button size="md" className="h-9 px-3 text-[13px]" onClick={() => void connect()} disabled={calendarLoading}>
+              Verbinden
+            </Button>
+          )}
         </Row>
       </div>
     </div>
