@@ -12,6 +12,7 @@ import { Button } from '../components/common/Button';
 import { BottomSheet } from '../components/common/BottomSheet';
 import { getIconComponent } from '../lib/iconLibrary';
 import { unlockAudio } from '../lib/sound';
+import { publicUrl } from '../lib/publicUrl';
 
 function greeting(): string {
   const hour = new Date().getHours();
@@ -62,6 +63,7 @@ export function TodayPage() {
   return (
     <div className="flex flex-col flex-1 pb-24">
       <div className="px-5 pt-6 safe-top flex flex-col items-center text-center gap-2">
+        <img src={publicUrl('logo.png')} alt="sloomi" className="w-full max-w-[160px] mb-6" />
         <Sloth state={ordered.length === 0 ? 'idle' : 'planning'} size={120} />
         <h1 className="text-[20px] font-semibold text-[var(--color-text)]">{greeting()}</h1>
         <p className="text-[14px] text-[var(--color-text-muted)]">Was steht heute an?</p>

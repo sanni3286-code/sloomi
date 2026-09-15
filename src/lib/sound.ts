@@ -6,6 +6,12 @@ import type { SoundId } from '../types/models';
  */
 
 let sharedContext: AudioContext | null = null;
+let masterVolume = 0.8;
+
+/** Lautstärke aller Benachrichtigungstöne, 0..1. */
+export function setSoundVolume(volume: number) {
+  masterVolume = Math.min(1, Math.max(0, volume));
+}
 
 function getContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -21,8 +27,9 @@ function tone(ctx: AudioContext, freq: number, startTime: number, duration: numb
   const gain = ctx.createGain();
   osc.type = type;
   osc.frequency.setValueAtTime(freq, startTime);
+  const gainTarget = Math.max(0.0001, peakGain * masterVolume);
   gain.gain.setValueAtTime(0.0001, startTime);
-  gain.gain.exponentialRampToValueAtTime(peakGain, startTime + 0.02);
+  gain.gain.exponentialRampToValueAtTime(gainTarget, startTime + 0.02);
   gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
   osc.connect(gain);
   gain.connect(ctx.destination);

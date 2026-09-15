@@ -76,6 +76,7 @@ export interface AppSettings {
   id: 'settings';
   theme: ThemePreference;
   defaultSound: SoundId;
+  soundVolume: number;
   autoAdvance: boolean;
   hapticsEnabled: boolean;
   onboardingCompleted: boolean;
