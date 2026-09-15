@@ -257,7 +257,7 @@ export function TimerView() {
 
         <button
           onClick={() => setAddOpen(true)}
-          className="w-full mt-3 py-3 rounded-2xl border border-dashed border-[var(--color-border)] text-[var(--color-text-muted)] text-[14px] font-medium flex items-center justify-center gap-2"
+          className="w-full mt-3 py-3 rounded-2xl border border-dashed border-[var(--color-accent)] text-[var(--color-on-accent)] bg-[var(--color-accent-soft)] text-[14px] font-medium flex items-center justify-center gap-2"
         >
           <Plus size={16} /> Aufgabe hinzufügen
         </button>

@@ -29,8 +29,8 @@ export function PlansPage() {
   return (
     <div className="flex flex-col flex-1 pb-24">
       <div className="px-5 pt-6 safe-top flex flex-col items-center text-center gap-2">
-        <Sloth state="planning" size={120} />
-        <h1 className="text-[20px] font-semibold text-[var(--color-text)]">Meine Pläne</h1>
+        <Sloth state="planning" size={150} className="mt-10" />
+        <h1 className="text-[26px] font-semibold text-[var(--color-text)]">Meine Pläne</h1>
         <p className="text-[14px] text-[var(--color-text-muted)]">Wiederkehrende Abläufe zum Wiederverwenden</p>
       </div>
 
@@ -54,7 +54,7 @@ export function PlansPage() {
             setNameInput('');
             setCreateOpen(true);
           }}
-          className="flex items-center justify-center gap-2 py-4 rounded-2xl border border-dashed border-[var(--color-border)] text-[var(--color-text-muted)] text-[14px] font-medium mt-1"
+          className="flex items-center justify-center gap-2 py-4 rounded-2xl border border-dashed border-[var(--color-accent)] text-[var(--color-on-accent)] bg-[var(--color-accent-soft)] text-[14px] font-medium mt-1"
         >
           <Plus size={16} /> Neuer Plan
         </button>
